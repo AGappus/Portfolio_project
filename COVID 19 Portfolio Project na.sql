@@ -1,17 +1,14 @@
+--LET'S EXPLORE CVDEATH TABLE
+--Seeing everything from CV19death table
 select *
 from CV19death
-where continent is null
 
-
--------------
--- Looking at total cases vs total death 
--- Show likelihood of dying if you contract covid in your country 
+-- Show likelihood of dying if I contract covid in my country 
 select location, date, total_cases, total_deaths, (total_deaths/total_cases)*100 as deathpercentage
 from CV19death
-where location like 'Viet%'
+where location = 'Vietnam'
 order by 1,2
 
--- Looking at total cases vs population 
 -- Show what percentage of population got covid 
 select location, date, total_cases, total_deaths, (total_cases/population)*100 as deathpercentage
 from CV19death
@@ -21,6 +18,7 @@ order by 1,2
 -- Looking at countries with hightest infection rate compared to population
 select location, max(total_cases) as highestinfectioncount, max(total_cases/population)*100 as percentpopulationinfected
 from CV19death
+where continent is not null
 group by location
 order by percentpopulationinfected desc
 
@@ -30,14 +28,6 @@ from CV19death
 where continent is not null
 group by location
 order by totaldeathcount desc
-
---Let's break things down by continent 
-select continent, max(cast(total_deaths as int)) as totaldeathcount
-from CV19death
-where continent is not null 
-group by continent 
-order by totaldeathcount desc
-
 
 ---Showing continents with the hightest death count per population
 select continent, max(cast(total_deaths as int)) as totaldeathcount
@@ -49,7 +39,6 @@ order by totaldeathcount desc
 ---- Global numbers over the time
 select date, sum(new_cases) as total_case, sum(cast(new_deaths as int)) as total_deaths,
 sum(cast(new_deaths as int))/sum(new_cases)*100 as deathpercentage
--- total_deaths, (total_deaths/total_cases)*100 as deathpercentage
 from CV19death
 where continent is not null
 group by date
@@ -58,12 +47,11 @@ order by 1,2
 ----death_percentage overall across the world
 select sum(new_cases) as total_case, sum(cast(new_deaths as int)) as total_deaths,
 sum(cast(new_deaths as int))/sum(new_cases)*100 as deathpercentage
--- total_deaths, (total_deaths/total_cases)*100 as deathpercentage
 from CV19death
 where continent is not null
 order by 1,2
 
---LET'S EXPLORE COVID-VACCINE
+--LET'S EXPLORE COVID-VACCINE TABLE 
 
 --Looking a total population vs vaccinations
 select DE.continent, DE.location, DE.date, DE.population, VA.new_vaccinations,
@@ -76,7 +64,7 @@ and DE.date = VA.date
 where DE.continent is not null
 order by 2,3
 
---USE CTE
+--Use CTE to show percentage of population vaccinated 
 with PopvsVac  (continent, location, date, population, new_vaccinations, RollingpeopleVaccinated)
 as 
 (

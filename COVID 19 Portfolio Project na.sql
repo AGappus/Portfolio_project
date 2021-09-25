@@ -16,10 +16,10 @@ where location like 'Viet%'
 order by 1,2
 
 -- Looking at countries with hightest infection rate compared to population
-select location, max(total_cases) as highestinfectioncount, max(total_cases/population)*100 as percentpopulationinfected
+select location, population, max(total_cases) as highestinfectioncount, max(total_cases/population)*100 as percentpopulationinfected
 from CV19death
 where continent is not null
-group by location
+group by location, population
 order by percentpopulationinfected desc
 
 --Showing countries with highest death count per population 
@@ -50,6 +50,14 @@ sum(cast(new_deaths as int))/sum(new_cases)*100 as deathpercentage
 from CV19death
 where continent is not null
 order by 1,2
+
+--Showing total deaths, total cases by continent 
+select location, sum(new_cases) as total_case, sum(cast(new_deaths as int)) as total_deaths
+from CV19death
+where continent is null
+and location not in ('World', 'European Union', 'International')
+group by location 
+order by total_case, total_deaths
 
 --LET'S EXPLORE COVID-VACCINE TABLE 
 
